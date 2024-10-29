@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from datetime import datetime
 import requests
 import io
 import os
@@ -16,13 +15,12 @@ app = Flask(__name__)
 Misaka(app, fenced_code=True, tables=True, strikethrough=True)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.sqlite')
-app.config['SECRET_KEY'] = 'svejk5417xm049p2gypu1wthixd2rh92jkrx28pc83vlmemi'  # Mude isto para uma string secreta real
+app.config['SECRET_KEY'] = 'svejk5417xm049p2gypu1wthixd2rh92jkrx28pc83vlmemi'
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# Simule uma base de dados de notícias (você substituiria isso por um banco de dados real)
 noticias_mock = [
     {
         "id": i,
@@ -34,7 +32,6 @@ noticias_mock = [
     } for i in range(1, 21)  # Cria 20 notícias de exemplo
 ]
 
-# Inicialize a extensão Markdown
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
