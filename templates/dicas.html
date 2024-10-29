@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Dicas - CodeSphere{% endblock %}
+
+{% block content %}
+<header>
+    <div class="container">
+        <h1>Dicas de IA e Programação</h1>
+    </div>
+</header>
+
+<main class="container">
+    {% if current_user.is_authenticated and current_user.is_admin %}
+    <a href="{{ url_for('adicionar_dica') }}" class="btn btn-primary">Adicionar Nova Dica</a>
+    {% endif %}
+
+    <section class="dicas-lista">
+        {% for dica in dicas %}
+        <article class="blog-post" id="dica-{{ dica.id }}">
+            <h2>{{ dica.titulo }}</h2>
+            <p class="post-meta">Publicado em {{ dica.data_publicacao.strftime('%d de %B, %Y') }} | Por {{ dica.autor }}</p>
+            <div class="dica-content">
+                <div class="dica-preview">{{ dica.texto[:200] | markdown | striptags }}...</div>
+                <div class="dica-full" style="display: none;">
+                    {{ dica.texto | markdown | safe }}
+                </div>
+            </div>
+            <button class="btn btn-secondary ler-mais" data-dica-id="{{ dica.id }}">Ler mais</button>
+            {% if current_user.is_authenticated and current_user.is_admin %}
+            <div class="admin-actions">
+                <a href="{{ url_for('editar_dica', id=dica.id) }}" class="btn-icon" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{{ url_for('excluir_dica', id=dica.id) }}" class="btn-icon btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta dica?');" title="Excluir">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </div>
+            {% endif %}
+        </article>
+        {% endfor %}
+    </section>
+</main>
+<script>
+    document.querySelectorAll('.ler-mais').forEach(button => {
+        button.addEventListener('click', function() {
+            const dicaId = this.getAttribute('data-dica-id');
+            const dicaArticle = document.getElementById(`dica-${dicaId}`);
+            const preview = dicaArticle.querySelector('.dica-preview');
+            const fullContent = dicaArticle.querySelector('.dica-full');
+            
+            if (preview.style.display !== 'none') {
+                preview.style.display = 'none';
+                fullContent.style.display = 'block';
+                this.textContent = 'Ler menos';
+            } else {
+                preview.style.display = 'block';
+                fullContent.style.display = 'none';
+                this.textContent = 'Ler mais';
+            }
+        });
+    });
+</script>
+{% endblock %}

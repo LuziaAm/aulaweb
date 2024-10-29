@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Imagem - AI Sphere{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Editar Imagem</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="link">Link da Imagem:</label>
+            <input type="url" id="link" name="link" value="{{ imagem.link }}" required class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="prompt">Prompt:</label>
+            <textarea id="prompt" name="prompt" required class="form-control">{{ imagem.prompt }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="categorias">Categorias:</label>
+            <select id="categorias" name="categorias" multiple class="form-control">
+                <option value="Animais" {% if imagem.categorias and 'Animais' in imagem.categorias.split(', ') %}selected{% endif %}>Animais</option>
+                <option value="Pessoas" {% if imagem.categorias and 'Pessoas' in imagem.categorias.split(', ') %}selected{% endif %}>Pessoas</option>
+                <option value="Futurísticas" {% if imagem.categorias and 'Futurísticas' in imagem.categorias.split(', ') %}selected{% endif %}>Futurísticas</option>
+                <option value="Realistas" {% if imagem.categorias and 'Realistas' in imagem.categorias.split(', ') %}selected{% endif %}>Realistas</option>
+                <option value="Vetores" {% if imagem.categorias and 'Vetores' in imagem.categorias.split(', ') %}selected{% endif %}>Vetores</option>
+                <option value="Produtos" {% if imagem.categorias and 'Produtos' in imagem.categorias.split(', ') %}selected{% endif %}>Produtos</option>
+            </select>
+            <small>Pressione Ctrl (ou Cmd no Mac) para selecionar múltiplas categorias.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Atualizar Imagem</button>
+        <a href="{{ url_for('listar_imagens') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categoriasSelect = document.getElementById('categorias');
+    const categoriasAtuais = "{{ imagem.categorias or '' }}".split(', ');
+    
+    Array.from(categoriasSelect.options).forEach(option => {
+        if (categoriasAtuais.includes(option.value)) {
+            option.selected = true;
+        }
+    });
+});
+</script>
+{% endblock %}

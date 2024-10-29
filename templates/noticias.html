@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Notícias - AI Sphere{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <h1>Notícias de IA</h1>
+        <p>Fique por dentro das últimas novidades no mundo da Inteligência Artificial</p>
+    </header>
+
+    {% if current_user.is_authenticated and current_user.is_admin %}
+    <a href="{{ url_for('adicionar_noticia') }}" class="btn btn-primary mb-3">Adicionar Nova Notícia</a>
+    {% endif %}
+
+    <div class="news-grid">
+        {% for noticia in noticias %}
+        <article class="news-card">
+            <img src="{{ noticia.imagem_url }}" alt="{{ noticia.titulo }}" class="news-image">
+            <div class="news-content">
+                <h2 class="news-title">{{ noticia.titulo }}</h2>
+                <!-- <p class="news-excerpt">{{ noticia.resumo }}</p> -->
+                <div class="news-meta">
+                        <span class="news-date">{{ noticia.data_publicacao.strftime('%d %b, %Y') }}</span>
+                    <a href="{{ noticia.link }}" class="news-link" target="_blank">Ler mais</a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    {% if paginas > 1 %}
+    <div class="pagination">
+        {% for page in range(1, paginas + 1) %}
+        <a href="{{ url_for('noticias', page=page) }}" class="{% if page == pagina_atual %}active{% endif %}">{{ page }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

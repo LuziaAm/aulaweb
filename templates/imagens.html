@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Galeria de Imagens - CodeSphere{% endblock %}
+
+{% block content %}
+<header>
+    <div class="container">
+        <h1>Galeria de Imagens</h1>
+    </div>
+</header>
+
+<main class="container">
+    <div class="filtro-categorias"></div>
+        <form method="GET" action="{{ url_for('listar_imagens') }}">
+            <label for="categoria">Filtrar por categoria:</label>
+            <select name="categoria" id="categoria">
+                <option value="">Todas</option>
+                <option value="Animais" {% if categoria_selecionada == 'Animais' %}selected{% endif %}>Animais</option>
+                <option value="Pessoas" {% if categoria_selecionada == 'Pessoas' %}selected{% endif %}>Pessoas</option>
+                <option value="Futurísticas" {% if categoria_selecionada == 'Futurísticas' %}selected{% endif %}>Futurísticas</option>
+                <option value="Realistas" {% if categoria_selecionada == 'Realistas' %}selected{% endif %}>Realistas</option>
+                <option value="Vetores" {% if categoria_selecionada == 'Vetores' %}selected{% endif %}>Vetores</option>
+                <option value="Produtos" {% if categoria_selecionada == 'Produtos' %}selected{% endif %}>Produtos</option>
+            </select>
+            <button type="submit">Filtrar</button>
+        </form>
+    </div>
+    {% if current_user.is_authenticated and current_user.is_admin %}
+    <a href="{{ url_for('adicionar_imagem') }}" class="btn btn-primary">Adicionar Nova Imagem</a>
+    {% endif %}
+
+    <div class="imagens-grid">
+        {% for imagem in imagens %}
+        <div class="imagem-card">
+            <div class="imagem-container">
+                <img src="{{ imagem.link }}" alt="Imagem {{ imagem.id }}" onerror="this.onerror=null; this.src='/static/placeholder.png';">
+            </div>
+            <div class="card-content">
+                <p class="data">{{ imagem.data_criacao.strftime('%d/%m/%Y') }}</p>
+                <p class="prompt">{{ imagem.prompt }}</p>
+                <p class="categorias">Categorias: {{ imagem.categorias }}</p>
+                <div class="action-buttons">
+                    <button class="btn btn-icon copy-btn" data-prompt="{{ imagem.prompt }}" title="Copiar Prompt">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <a href="{{ url_for('download_imagem', id=imagem.id) }}" class="btn-icon" title="Download">
+                        <i class="fas fa-download"></i>
+                    </a>
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <a href="{{ url_for('editar_imagem', id=imagem.id) }}" class="btn-icon" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{{ url_for('excluir_imagem', id=imagem.id) }}" class="btn-icon btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta imagem?');" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+
+<script>
+    document.querySelectorAll('.copy-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const prompt = this.getAttribute('data-prompt');
+            navigator.clipboard.writeText(prompt).then(() => {
+                this.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-copy"></i>';
+                }, 2000);
+            });
+        });
+    });
+</script>
+{% endblock %}

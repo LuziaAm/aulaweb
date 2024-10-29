@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Projetos de IA - AI Sphere{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Projetos de Inteligência Artificial</h1>
+
+    <div class="search-bar">
+        <form method="GET" action="{{ url_for('listar_projetos') }}">
+            <input type="text" name="busca" placeholder="Buscar projetos..." value="{{ busca }}">
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+
+    {% if current_user.is_authenticated and current_user.is_admin %}
+    <a href="{{ url_for('adicionar_projeto') }}" class="btn btn-primary">Adicionar Novo Projeto</a>
+    {% endif %}
+
+    <div class="projetos-lista">
+        {% for projeto in projetos %}
+        <div class="projeto-card">
+            <h2>{{ projeto.nome }}</h2>
+            <p>{{ projeto.descricao }}</p>
+            <p><strong>Tecnologias:</strong> {{ projeto.tecnologias }}</p>
+            {% if projeto.link %}
+            <a href="{{ projeto.link }}" target="_blank" class="btn btn-secondary">Ver Projeto</a>
+            {% endif %}
+            <p class="data-criacao">Criado em: {{ projeto.data_criacao.strftime('%d/%m/%Y') }}</p>
+        </div>
+        {% else %}
+        <p>Nenhum projeto encontrado.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

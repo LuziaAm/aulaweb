@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Cursos e Tutoriais - AI Sphere{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header>
+        <h1>Cursos e Tutoriais</h1>
+        <p class="subtitle">Aprenda e aprimore seus conhecimentos em IA</p>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if current_user.is_authenticated and current_user.is_admin %}
+    <div class="admin-actions">
+        <a href="{{ url_for('adicionar_tutorial') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Adicionar Tutorial
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="tutoriais-grid">
+        {% for tutorial in tutoriais %}
+        <article class="tutorial-card">
+            <div class="tutorial-tags">
+                <div class="tutorial-tag">{{ tutorial.tag_tutorial }}</div>
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                <div class="admin-actions-tutorial">
+                    <a href="{{ url_for('editar_tutorial', id=tutorial.id) }}" class="btn-icon" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{{ url_for('excluir_tutorial', id=tutorial.id) }}" class="btn-icon btn-danger" 
+                       onclick="return confirm('Tem certeza que deseja excluir este tutorial?');" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="tutorial-content">
+                <h2 class="tutorial-titulo">{{ tutorial.titulo }}</h2>
+                <p class="tutorial-preview">
+                    {% if tutorial.texto|length > 200 %}
+                        {{ tutorial.texto[:200] }}...
+                    {% else %}
+                        {{ tutorial.texto }}
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="tutorial-footer">
+                <div class="tutorial-tools">
+                    <span class="tools-label">Ferramentas:</span>
+                    <div class="tools-tags">
+                        {% for ferramenta in tutorial.ferramentas.split(',') %}
+                            <span class="tool-tag">{{ ferramenta.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="tutorial-meta">
+                    <span class="tutorial-date">
+                        <i class="far fa-calendar-alt"></i>
+                        {{ tutorial.data_criacao.strftime('%d/%m/%Y') }}
+                    </span>
+                </div>
+
+                <a href="{{ url_for('ver_tutorial', id=tutorial.id) }}" class="read-more-btn">
+                    <span>Ler mais</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </article>
+        {% else %}
+        <div class="no-tutorials">
+            <p>Nenhum tutorial encontrado.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if tutoriais %}
+    <div class="pagination">
+        <!-- Adicione paginação aqui se necessário -->
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

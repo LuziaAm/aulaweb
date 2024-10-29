@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Tutorial - AI Sphere{% endblock %}
+
+{% block head %}
+<!-- Adicione o TinyMCE -->
+<script src="https://cdn.tiny.cloud/1/sua_chave_api_aqui/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '#texto',
+        plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
+        toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | removeformat help',
+        images_upload_url: '{{ url_for("upload_imagem") }}',
+        automatic_uploads: true,
+        file_picker_types: 'image',
+        images_upload_handler: function (blobInfo, success, failure) {
+            let formData = new FormData();
+            formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+            fetch('{{ url_for("upload_imagem") }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                success(result.location);
+            })
+            .catch(error => {
+                failure('Erro ao fazer upload da imagem: ' + error);
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Editar Tutorial</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" value="{{ tutorial.titulo }}" required class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="tag_tutorial">Tag do Tutorial:</label>
+            <input type="text" id="tag_tutorial" name="tag_tutorial" value="{{ tutorial.tag_tutorial }}" required class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="texto">Conteúdo:</label>
+            <textarea id="texto" name="texto" required class="form-control">{{ tutorial.texto }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="ferramentas">Ferramentas (separadas por vírgula):</label>
+            <input type="text" id="ferramentas" name="ferramentas" value="{{ tutorial.ferramentas }}" required class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Atualizar Tutorial</button>
+        <a href="{{ url_for('cursos') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

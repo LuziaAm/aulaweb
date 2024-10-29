@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Dica - CodeSphere{% endblock %}
+
+{% block content %}
+<header>
+    <div class="container">
+        <h1>Editar Dica</h1>
+    </div>
+</header>
+
+<main class="container">
+    <form method="POST" class="edit-form">
+        <div class="form-group">
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" value="{{ dica.titulo }}" required class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="autor">Autor:</label>
+            <input type="text" id="autor" name="autor" value="{{ dica.autor }}" required class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="texto">Conteúdo (Markdown):</label>
+            <textarea id="texto" name="texto" rows="15" required class="form-control">{{ dica.texto }}</textarea>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Atualizar Dica</button>
+            <a href="{{ url_for('dicas') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+
+    <div class="markdown-preview">
+        <h3>Prévia:</h3>
+        <div id="preview-content"></div>
+    </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"></script>
+<script>
+    const textArea = document.getElementById('texto');
+    const preview = document.getElementById('preview-content');
+
+    function updatePreview() {
+        preview.innerHTML = marked(textArea.value);
+    }
+
+    textArea.addEventListener('input', updatePreview);
+    updatePreview(); // Initial preview
+</script>
+<script>
+    var quill = new Quill('#editor', {
+        theme: 'snow',  // Tema de estilo
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline'],
+                ['link', 'blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }]
+            ]
+        }
+    });
+
+    // Quando o formulário for enviado, atualizar o valor do campo escondido com o conteúdo do Quill
+    var form = document.querySelector('form');
+    form.onsubmit = function() {
+        document.querySelector('input[name=texto]').value = quill.root.innerHTML;
+    };
+</script>
+{% endblock %}

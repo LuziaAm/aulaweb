@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Adicionar Notícia - AI Sphere{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Adicionar Nova Notícia</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" required class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="resumo">Resumo:</label>
+            <textarea id="resumo" name="resumo" required class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="imagem_url">URL da Imagem:</label>
+            <input type="url" id="imagem_url" name="imagem_url" required class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="link">Link da Notícia:</label>
+            <input type="url" id="link" name="link" required class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Adicionar Notícia</button>
+    </form>
+</div>
+{% endblock %}
